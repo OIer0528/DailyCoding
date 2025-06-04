@@ -1,0 +1,111 @@
+/* ==================== 全局重置 & 变量 ==================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --background-color: #222222;
+    --hint-text-color: #eeeeee;
+
+    --rotate-x: 35deg;
+    --translate-z: 90px;
+
+    --opacity-05: 0.05;
+    --opacity-10: 0.10;
+    --opacity-25: 0.25;
+}
+
+/* ==================== 基础排版 ==================== */
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+
+    min-height: 100vh;
+    background-color: var(--background-color);
+}
+
+/* ==================== 提示文本 ==================== */
+
+#hint-text {
+    color: var(--hint-text-color);
+    font-size: 24px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* ==================== 容器 ==================== */
+
+.container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+}
+
+.container span {
+    transition-duration: 2.5s;
+}
+
+.container:hover span {
+    transform: rotateX(360deg);
+}
+
+.container span.center {
+    position: absolute;
+    inset: 0;
+
+    border: 2px solid rgba(255, 255, 255, var(--opacity-25));
+    background-color: rgba(255, 255, 255, var(--opacity-05));
+    backdrop-filter: blur(24px);
+}
+
+.container span.sides {
+    position: absolute;
+    inset: 0;
+
+    transform-style: preserve-3d;
+}
+
+.container span.sides::before {
+    content: "";
+    position: absolute;
+    inset: 15px;
+
+    border: 2px solid rgba(255, 255, 255, var(--opacity-25));
+    background-color: rgba(255, 255, 255, var(--opacity-10));
+    backdrop-filter: blur(2px);
+
+    transform: translateZ(calc(var(--translate-z) * +1));
+}
+
+.container span.sides::after {
+    content: "";
+    position: absolute;
+    inset: 15px;
+
+    background: linear-gradient(45deg, #00bcd4, #ff0057);
+
+    transform: translateZ(calc(var(--translate-z) * -1));
+}
+
+/* ==================== 三维旋转动画 ==================== */
+
+.rotate-3d {
+    transform-style: preserve-3d;
+    animation: animate 4s linear infinite;
+}
+
+@keyframes animate {
+    0% {
+        transform: rotateX(var(--rotate-x)) rotateZ(0deg);
+    }
+
+    100% {
+        transform: rotateX(var(--rotate-x)) rotateZ(360deg);
+    }
+}
