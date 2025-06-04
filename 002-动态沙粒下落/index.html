@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Falling Sand Simulator with p5.js</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #333;
+        }
+
+        .banner {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .banner .title {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .banner .hint {
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="banner">
+        <div class="title">Falling Sand Simulator with p5.js</div>
+        <div class="hint">Click and drag to add sand particles</div>
+    </div>
+
+    <!-- 引入 p5.js 库（通过 jsDelivr CDN 加速） -->
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.5.0/lib/p5.js"></script>
+
+    <script>
+        /**
+         * 创建一个指定行列数的二维数组，并填充初始值 0
+         * @param {number} cols - 数组的列数（外层数组长度）
+         * @param {number} rows - 数组的行数（每个子数组的长度）
+         * @returns {number[][]} 初始化后的二维数组，所有元素值为 0
+         * @example
+         * // 返回 2x3 的二维零数组
+         * make2DArray(2, 3); // [[0, 0, 0], [0, 0, 0]]
+         */
+        function make2DArray(cols, rows) {
+            return Array.from({ length: cols }, () => Array(rows).fill(0));
+        }
+    </script>
+
+    <script>
+        const CANVAS_WIDTH = 600;
+        const CANVAS_HEIGHT = 800;
+
+        const SAND_WIDTH = 5;
+        const SAND_HEIGHT = 5;
+
+        const cols = Math.floor(CANVAS_WIDTH / SAND_WIDTH);
+        const rows = Math.floor(CANVAS_HEIGHT / SAND_HEIGHT);
+
+        const withinCols = (i) => (0 <= i && i < cols);
+        const withinRows = (j) => (0 <= j && j < rows);
+
+        // 创建一个二维数组 grid 用于表示沙粒的状态：
+        //   grid[i][j] 表示第 i 列第 j 行的格点（以左上为原点）
+        //   0      表示该格点没有沙粒
+        //   1~255  表示有沙粒，数值可作为色相（hue）用于着色
+        let grid = make2DArray(cols, rows);
+
+        // 更新网格状态 - 模拟落沙
+        function updateGrid() {
+            let nextGrid = make2DArray(cols, rows);
+
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    const state = grid[i][j];
+                    if (state === 0) continue;
+
+                    // 如果落到最底层，保持不动
+                    if (j == rows - 1) {
+                        nextGrid[i][j] = state;
+                        continue;
+                    }
+
+                    // 如果下面没有沙粒，直接落下
+                    const below = grid[i][j + 1];
+                    if (below === 0) {
+                        nextGrid[i][j + 1] = state;
+                        continue;
+                    }
+
+                    // 如果下面有沙粒，随机尝试向左下或右下落
+                    const dir = random([-1, +1]);
+                    const belowA = withinCols(i - dir) ? grid[i - dir][j + 1] : null;
+                    if (belowA == 0) {
+                        nextGrid[i - dir][j + 1] = state;
+                        continue;
+                    }
+                    const belowB = withinCols(i + dir) ? grid[i + dir][j + 1] : null;
+                    if (belowB == 0) {
+                        nextGrid[i + dir][j + 1] = state;
+                        continue;
+                    }
+
+                    // 如果都不能落下，保持原位置
+                    nextGrid[i][j] = state;
+                }
+            }
+            return nextGrid;
+        }
+    </script>
+
+    <script>
+        // p5.js 的 setup 函数在程序开始时运行一次
+        // 用于初始化画布和其他设置
+        function setup() {
+            // 创建画布
+            createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // 设置颜色模式为 HSB（色相、饱和度、亮度）
+            colorMode(HSB, 360, 255, 255);
+        }
+
+
+        // p5.js 的 draw 函数在每一帧自动调用
+        // 这里用于绘制沙粒和更新网格状态
+        function draw() {
+            background(0);
+            noStroke();
+
+            // 绘制沙粒
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    if (grid[i][j] === 0) continue;
+                    fill(grid[i][j], 255, 255);
+                    rect(i * SAND_WIDTH, j * SAND_HEIGHT, SAND_WIDTH, SAND_HEIGHT);
+                }
+            }
+
+            // 更新网格
+            grid = updateGrid();
+        }
+
+        // 每次添加沙粒后增加色相值，模拟沙粒颜色变化
+        let hueValue = 40;
+        const hueValueMin = 40; // 色相值最小值
+        const hueValueMax = 60; // 色相值最大值
+
+        // p5.js 的 mouseDragged 函数在鼠标拖动时自动调用
+        // 这里用于添加沙粒到网格中
+        function mouseDragged() {
+            // 在鼠标位置添加沙粒
+            const i = Math.floor(mouseX / SAND_WIDTH);
+            const j = Math.floor(mouseY / SAND_HEIGHT);
+            if (withinCols(i) && withinRows(j) && grid[i][j] == 0) {
+                grid[i][j] = hueValue;
+            }
+            // 每次添加沙粒后增加色相值
+            hueValue += 1;
+            if (hueValue > hueValueMax) {
+                hueValue = hueValueMin;
+            }
+        }
+    </script>
+</body>
+
+</html>
