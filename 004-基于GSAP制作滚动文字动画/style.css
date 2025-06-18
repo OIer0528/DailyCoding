@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Host+Grotesk:ital,wght@0,300..800;1,300..800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "DM Sans", sans-serif;
+    background-color: #141414;
+}
+
+/* ======= */
+/* section */
+/* ======= */
+
+section {
+    /* 使 section 元素定位为相对定位，方便内部绝对定位元素的布局 */
+    position: relative;
+
+    /* section 宽度占满整个视口宽度 */
+    /* section 高度占满整个视口高度（支持小屏设备） */
+    width: 100vw;
+    height: 100svh;
+    padding: 2em;
+
+    /* 隐藏超出 section 区域的内容，常用于动画或滚动效果 */
+    overflow: hidden;
+}
+
+section .copy-container {
+    /* 宽高占满父元素 */
+    width: 100%;
+    height: 100%;
+
+    /* 使用 Flex 布局让内容居中 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    border-radius: 2rem;
+}
+
+section .copy-container h1 {
+    width: 70%;
+
+    color: #141414;
+    font-size: 5rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+section.hero .copy-container {
+    background-color: #fe6d38;
+}
+
+section.cta .copy-container {
+    background-color: #c6fe69;
+}
+
+section.outro .copy-container {
+    background-color: #7a78ff;
+}
+
+section.about .copy-container,
+section.features .copy-container {
+    border: 0.15rem dashed rgb(60, 60, 60);
+}
+
+/* ========== */
+/* anime-text */
+/* ========== */
+
+.anime-text {
+    width: 60%;
+}
+
+.anime-text p {
+    margin-bottom: 2rem;
+
+    text-align: center;
+    color: #ffffff;
+    font-size: 2rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.anime-text .word {
+    display: inline-block;        /* 让每个单词成为独立的内联块，便于动画和定位 */
+
+    position: relative;           /* 相对定位，为内部绝对定位元素或动画做准备 */
+    margin-right: 0.2rem;         /* 单词之间的水平间距 */
+    margin-bottom: 0.2rem;        /* 单词之间的垂直间距 */
+    padding: 0.1rem 0.2rem;       /* 单词内边距，增加可读性和点击区域 */
+    border-radius: 2rem;          /* 圆角，气泡效果 */
+
+    will-change: background-color, opacity; /* 提示浏览器优化这两个属性的动画性能 */
+}
+
+.anime-text .word.keyword-wrapper {
+    margin: 0 0.4rem 0.2rem 0.2rem;
+}
+
+.anime-text .word span {
+    position: relative;
+}
+
+.anime-text .word span.keyword {
+    display: inline-block;
+
+    width: 100%;
+    height: 100%;
+    padding: 0.1rem 0;
+    border-radius: 2rem;
+
+    color: #141414;
+}
+
+.anime-text .word span.keyword::before {
+    content: "";
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: calc(100% + 1rem);
+    height: calc(100% + 0.4rem);
+    border-radius: 2rem;
+
+    background-color: #ffffff;
+
+    z-index: -1;
+}
+
+.anime-text .word span.keyword.vibrant::before,
+.anime-text .word span.keyword.shape::before,
+.anime-text .word span.keyword.interactive::before {
+    background-color: #7a78ff;
+}
+
+.anime-text .word span.keyword.living::before,
+.anime-text .word span.keyword.expression::before,
+.anime-text .word span.keyword.storytelling::before {
+    background-color: #fe6d38;
+}
+
+.anime-text .word span.keyword.clarity::before,
+.anime-text .word span.keyword.intuitive::before,
+.anime-text .word span.keyword.vision::before {
+    background-color: #c6fe69;
+}
